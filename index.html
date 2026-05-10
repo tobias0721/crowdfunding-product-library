@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>众筹选品库 — 饮水器皿卖点迁移分析</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { font-family: 'Inter', 'Noto Sans SC', sans-serif; background: #0f172a; color: #e2e8f0; }
+    .card-glass { background: rgba(30,41,59,0.7); backdrop-filter: blur(12px); border: 1px solid rgba(148,163,184,0.1); }
+    .gradient-text { background: linear-gradient(135deg, #60a5fa, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .tag { display: inline-flex; align-items: center; gap: 4px; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 500; }
+    .tag-blue { background: rgba(59,130,246,0.15); color: #93c5fd; border: 1px solid rgba(59,130,246,0.3); }
+    .tag-purple { background: rgba(139,92,246,0.15); color: #c4b5fd; border: 1px solid rgba(139,92,246,0.3); }
+    .tag-orange { background: rgba(249,115,22,0.15); color: #fdba74; border: 1px solid rgba(249,115,22,0.3); }
+    .tag-green { background: rgba(34,197,94,0.15); color: #86efac; border: 1px solid rgba(34,197,94,0.3); }
+    .highlight-box { background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(139,92,246,0.08)); border-left: 3px solid #60a5fa; }
+    .migrate-row:hover { background: rgba(59,130,246,0.05); }
+    .concept-card { transition: all 0.3s ease; }
+    .concept-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+    .metric-number { font-size: 2.5rem; font-weight: 700; line-height: 1; }
+    .section-divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(148,163,184,0.2), transparent); }
+    .source-pill { font-size: 11px; padding: 1px 8px; border-radius: 4px; font-weight: 600; }
+    .source-ks { background: rgba(14,165,233,0.15); color: #7dd3fc; }
+    .source-ig { background: rgba(236,72,153,0.15); color: #f9a8d4; }
+    .scroll-indicator { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, #60a5fa, #a78bfa); z-index: 50; }
+  </style>
+</head>
+<body class="min-h-screen">
+  <div id="scrollBar" class="scroll-indicator" style="width:0%"></div>
+
+  <!-- Header -->
+  <header class="sticky top-0 z-40 card-glass border-b border-slate-700/30">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg">C</div>
+        <div>
+          <h1 class="text-lg font-bold text-white">众筹选品库</h1>
+          <p class="text-xs text-slate-400">饮水器皿卖点迁移分析 · 2026.05.10</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-4 text-sm">
+        <span class="tag tag-blue">147 个项目</span>
+        <span class="tag tag-purple">Kickstarter + Indiegogo</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-6 py-8 space-y-12">
+
+    <!-- Key Metrics -->
+    <section class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="card-glass rounded-2xl p-5 text-center">
+        <div class="metric-number gradient-text">147</div>
+        <div class="text-sm text-slate-400 mt-1">总抓取项目</div>
+        <div class="text-xs text-slate-500 mt-1">KS 120 + IG 27</div>
+      </div>
+      <div class="card-glass rounded-2xl p-5 text-center">
+        <div class="metric-number text-sky-400">2</div>
+        <div class="text-sm text-slate-400 mt-1">直接饮水器皿</div>
+        <div class="text-xs text-slate-500 mt-1">占比 1.4%</div>
+      </div>
+      <div class="card-glass rounded-2xl p-5 text-center">
+        <div class="metric-number text-emerald-400">~$49K</div>
+        <div class="text-sm text-slate-400 mt-1">饮水类众筹总额</div>
+        <div class="text-xs text-slate-500 mt-1">仅2个项目</div>
+      </div>
+      <div class="card-glass rounded-2xl p-5 text-center">
+        <div class="metric-number text-amber-400">~8</div>
+        <div class="text-sm text-slate-400 mt-1">可迁移卖点项目</div>
+        <div class="text-xs text-slate-500 mt-1">跨品类借鉴</div>
+      </div>
+    </section>
+
+    <!-- Chart -->
+    <section class="card-glass rounded-2xl p-6">
+      <h2 class="text-lg font-bold mb-4 flex items-center gap-2">
+        <span class="w-1 h-6 bg-blue-500 rounded-full"></span>
+        品类分布 & 饮水器皿蓝海信号
+      </h2>
+      <div class="grid md:grid-cols-3 gap-6 items-center">
+        <div class="md:col-span-2">
+          <canvas id="categoryChart" height="200"></canvas>
+        </div>
+        <div class="space-y-3">
+          <div class="highlight-box rounded-xl p-4">
+            <div class="text-sm font-semibold text-blue-300 mb-1">关键发现</div>
+            <p class="text-sm text-slate-300">饮水器皿在众筹中占比仅 <strong class="text-white">1.4%</strong>，说明这不是热门品类，反而意味着<strong class="text-emerald-400">蓝海机会</strong> — 竞争少、创新空间大。</p>
+          </div>
+          <div class="highlight-box rounded-xl p-4">
+            <div class="text-sm font-semibold text-purple-300 mb-1">成功路径</div>
+            <p class="text-sm text-slate-300">两个成功项目都走<strong class="text-white">高端工艺/仪式感</strong>路线，而非功能堆叠。材质叙事比参数更能打动众筹用户。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- Direct Projects -->
+    <section>
+      <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
+        <span class="w-1 h-6 bg-emerald-500 rounded-full"></span>
+        直接相关项目（饮水器皿类）
+      </h2>
+      <div class="grid md:grid-cols-2 gap-6">
+
+        <!-- Kettle -->
+        <div class="card-glass rounded-2xl overflow-hidden concept-card">
+          <div class="h-40 bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center relative">
+            <div class="text-6xl">🫖</div>
+            <div class="absolute top-3 right-3 source-pill source-ks">Kickstarter</div>
+            <div class="absolute bottom-3 left-3">
+              <span class="tag tag-orange">DIY / Crafts</span>
+            </div>
+          </div>
+          <div class="p-5">
+            <h3 class="text-lg font-bold text-white mb-2">Nambu Iron Kettle</h3>
+            <p class="text-sm text-slate-400 mb-4">南部铁壶 — 400年传统工艺手工制作</p>
+            <div class="grid grid-cols-3 gap-3 mb-4">
+              <div class="text-center p-2 bg-slate-800/50 rounded-lg">
+                <div class="text-lg font-bold text-emerald-400">¥400万+</div>
+                <div class="text-xs text-slate-500">众筹金额</div>
+              </div>
+              <div class="text-center p-2 bg-slate-800/50 rounded-lg">
+                <div class="text-lg font-bold text-sky-400">129</div>
+                <div class="text-xs text-slate-500">支持者</div>
+              </div>
+              <div class="text-center p-2 bg-slate-800/50 rounded-lg">
+                <div class="text-lg font-bold text-amber-400">1336%</div>
+                <div class="text-xs text-slate-500">达成率</div>
+              </div>
+            </div>
+            <div class="space-y-2">
+              <div class="flex items-start gap-2 text-sm">
+                <span class="text-blue-400 mt-0.5">▸</span>
+                <span class="text-slate-300">铁材质释放 <strong class="text-white">Fe²⁺ 亚铁离子</strong>，人体吸收率高</span>
+              </div>
+              <div class="flex items-start gap-2 text-sm">
+                <span class="text-blue-400 mt-0.5">▸</span>
+                <span class="text-slate-300">每升水含铁量比普通壶高 <strong class="text-white">70 倍</strong>（0.07mg vs 0.001mg）</span>
+              </div>
+              <div class="flex items-start gap-2 text-sm">
+                <span class="text-blue-400 mt-0.5">▸</span>
+                <span class="text-slate-300">arare 凸起纹理 = 均匀导热 + 增强保温 + 防变形</span>
+              </div>
+              <div class="flex items-start gap-2 text-sm">
+                <span class="text-blue-400 mt-0.5">▸</span>
+                <span class="text-slate-300">900°C 烧制氧化层，<strong class="text-white">越用越强</strong></span>
+              </div>
+              <div class="flex items-start gap-2 text-sm">
+                <span class="text-blue-400 mt-0.5">▸</span>
+                <span class="text-slate-300">多场景：燃气灶 / IH电磁炉 / 户外篝火</span>
+              </div>
+            </div>
+            <a href="https://www.kickstarter.com/projects/peak-japan/a-nambu-iron-kettle-shaped-by-400-years-of-craft-from-japan" target="_blank" class="mt-4 inline-flex items-center gap-1 text-sm text-blue-400 hover:text-blue-300 transition">
+              查看项目 <span class="text-xs">↗</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Barrel -->
+        <div class="card-glass rounded-2xl overflow-hidden concept-card">
+          <div class="h-40 bg-gradient-to-br from-amber-900/30 to-slate-800 flex items-center justify-center relative">
+            <div class="text-6xl">🥃</div>
+            <div class="absolute top-3 right-3 source-pill source-ks">Kickstarter</div>
+            <div class="absolute bottom-3 left-3">
+              <span class="tag tag-purple">飲料 / Drinks</span>
+            </div>
+          </div>
+          <div class="p-5">
+            <h3 class="text-lg font-bold text-white mb-2">Transparent Flask Aging Barrel</h3>
+            <p class="text-sm text-slate-400 mb-4">透明陈酿桶 — 观看威士忌的物理变化</p>
+            <div class="grid grid-cols-3 gap-3 mb-4">
+              <div class="text-center p-2 bg-slate-800/50 rounded-lg">
+                <div class="text-lg font-bold text-emerald-400">¥325万+</div>
+                <div class="text-xs text-slate-500">众筹金额</div>
+              </div>
+              <div class="text-center p-2 bg-slate-800/50 rounded-lg">
+                <div class="text-lg font-bold text-sky-400">48</div>
+                <div class="text-xs text-slate-500">支持者</div>
+              </div>
+              <div class="text-center p-2 bg-slate-800/50 rounded-lg">
+                <div class="text-lg font-bold text-amber-400">325%</div>
+                <div class="text-xs text-slate-500">达成率</div>
+              </div>
+            </div>
+            <div class="space-y-2">
+              <div class="flex items-start gap-2 text-sm">
+                <span class="text-amber-400 mt-0.5">▸</span>
+                <span class="text-slate-300"><strong class="text-white">透明可视化</strong>：观看陈酿物理变化过程，创造沉浸式体验</span>
+              </div>
+              <div class="flex items-start gap-2 text-sm">
+                <span class="text-amber-400 mt-0.5">▸</span>
+                <span class="text-slate-300"><strong class="text-white">3 根风味 infusion sticks</strong>，每批酒可定制不同风味</span>
+              </div>
+              <div class="flex items-start gap-2 text-sm">
+                <span class="text-amber-400 mt-0.5">▸</span>
+                <span class="text-slate-300">容量分级：<strong class="text-white">0.7L 和 1.2L</strong>，满足不同场景</span>
+              </div>
+              <div class="flex items-start gap-2 text-sm">
+                <span class="text-amber-400 mt-0.5">▸</span>
+                <span class="text-slate-300">仪式感："Watch Whiskey Transform" — 把喝酒变成<strong class="text-white">可观赏的过程</strong></span>
+              </div>
+            </div>
+            <a href="https://www.kickstarter.com/projects/712066644/transparent-flask-aging-barrel-watch-whiskey-transform" target="_blank" class="mt-4 inline-flex items-center gap-1 text-sm text-amber-400 hover:text-amber-300 transition">
+              查看项目 <span class="text-xs">↗</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- Migration Matrix -->
+    <section>
+      <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
+        <span class="w-1 h-6 bg-purple-500 rounded-full"></span>
+        跨品类卖点迁移矩阵
+      </h2>
+      <p class="text-sm text-slate-400 mb-4">从非饮水器皿类项目中提取可迁移的卖点，应用到水杯/水瓶产品</p>
+
+      <!-- Dimension 1 -->
+      <div class="mb-6">
+        <h3 class="text-sm font-semibold text-blue-300 mb-3 flex items-center gap-2">
+          <span class="w-6 h-6 rounded bg-blue-500/20 text-blue-300 flex items-center justify-center text-xs">1</span>
+          材质与功能释放
+        </h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-left text-slate-400 border-b border-slate-700">
+                <th class="pb-3 pr-4 font-medium">原项目</th>
+                <th class="pb-3 pr-4 font-medium">原卖点</th>
+                <th class="pb-3 font-medium text-blue-300">→ 迁移到水杯/水瓶</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="migrate-row border-b border-slate-800/50">
+                <td class="py-3 pr-4">
+                  <span class="source-pill source-ks mr-1">KS</span>
+                  <span class="text-slate-300">Nambu Iron Kettle</span>
+                </td>
+                <td class="py-3 pr-4 text-slate-400">铁材质释放 Fe²⁺ 离子</td>
+                <td class="py-3 text-white"><strong>矿物释放内胆</strong>：陶瓷/火山岩/麦饭石内胆，释放微量元素</td>
+              </tr>
+              <tr class="migrate-row border-b border-slate-800/50">
+                <td class="py-3 pr-4">
+                  <span class="source-pill source-ks mr-1">KS</span>
+                  <span class="text-slate-300">Nambu Iron Kettle</span>
+                </td>
+                <td class="py-3 pr-4 text-slate-400">高温氧化层越用越强</td>
+                <td class="py-3 text-white"><strong>自修复涂层</strong>：纳米涂层随使用时间变厚，防污性能提升</td>
+              </tr>
+              <tr class="migrate-row">
+                <td class="py-3 pr-4">
+                  <span class="source-pill source-ks mr-1">KS</span>
+                  <span class="text-slate-300">Transparent Barrel</span>
+                </td>
+                <td class="py-3 pr-4 text-slate-400">透明材质可视化陈酿</td>
+                <td class="py-3 text-white"><strong>透明 Tritan/玻璃</strong>：让用户看到饮品状态（茶色渐变、水果浸泡）</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Dimension 2 -->
+      <div class="mb-6">
+        <h3 class="text-sm font-semibold text-purple-300 mb-3 flex items-center gap-2">
+          <span class="w-6 h-6 rounded bg-purple-500/20 text-purple-300 flex items-center justify-center text-xs">2</span>
+          表面纹理 = 功能设计
+        </h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-left text-slate-400 border-b border-slate-700">
+                <th class="pb-3 pr-4 font-medium">原项目</th>
+                <th class="pb-3 pr-4 font-medium">原卖点</th>
+                <th class="pb-3 font-medium text-purple-300">→ 迁移到水杯/水瓶</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="migrate-row border-b border-slate-800/50">
+                <td class="py-3 pr-4">
+                  <span class="source-pill source-ks mr-1">KS</span>
+                  <span class="text-slate-300">Nambu Kettle</span>
+                </td>
+                <td class="py-3 pr-4 text-slate-400">arare 纹理均匀导热+保温</td>
+                <td class="py-3 text-white"><strong>防滑纹理</strong>：凸起纹理增加握持摩擦力 + 减少接触面积（防烫/保温）</td>
+              </tr>
+              <tr class="migrate-row border-b border-slate-800/50">
+                <td class="py-3 pr-4">
+                  <span class="source-pill source-ks mr-1">KS</span>
+                  <span class="text-slate-300">Nambu Kettle</span>
+                </td>
+                <td class="py-3 pr-4 text-slate-400">纹理分散热应力防变形</td>
+                <td class="py-3 text-white"><strong>结构加强筋</strong>：纵向纹理不只是装饰，增强抗摔性</td>
+              </tr>
+              <tr class="migrate-row">
+                <td class="py-3 pr-4">
+                  <span class="source-pill source-ks mr-1">KS</span>
+                  <span class="text-slate-300">Nambu Kettle</span>
+                </td>
+                <td class="py-3 pr-4 text-slate-400">纹理不易刮花、易清洁</td>
+                <td class="py-3 text-white"><strong>防指纹纹理</strong>：哑光凹凸表面处理，减少指纹残留</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Dimension 3 -->
+      <div class="mb-6">
+        <h3 class="text-sm font-semibold text-amber-300 mb-3 flex items-center gap-2">
+          <span class="w-6 h-6 rounded bg-amber-500/20 text-amber-300 flex items-center justify-center text-xs">3</span>
+          可视化与仪式感
+        </h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-left text-slate-400 border-b border-slate-700">
+                <th class="pb-3 pr-4 font-medium">原项目</th>
+                <th class="pb-3 pr-4 font-medium">原卖点</th>
+                <th class="pb-3 font-medium text-amber-300">→ 迁移到水杯/水瓶</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="migrate-row border-b border-slate-800/50">
+                <td class="py-3 pr-4">
+                  <span class="source-pill source-ks mr-1">KS</span>
+                  <span class="text-slate-300">Transparent Barrel</span>
+                </td>
+                <td class="py-3 pr-4 text-slate-400">观看陈酿变化过程</td>
+                <td class="py-3 text-white"><strong>渐变显示</strong>：温度感应变色涂层，倒入热水后颜色渐变</td>
+              </tr>
+              <tr class="migrate-row border-b border-slate-800/50">
+                <td class="py-3 pr-4">
+                  <span class="source-pill source-ks mr-1">KS</span>
+                  <span class="text-slate-300">Transparent Barrel</span>
+                </td>
+                <td class="py-3 pr-4 text-slate-400">3 根风味棒定制每批酒</td>
+                <td class="py-3 text-white"><strong>模块化 flavor pods</strong>：杯盖内置可替换风味滤片（柠檬/薄荷）</td>
+              </tr>
+              <tr class="migrate-row">
+                <td class="py-3 pr-4">
+                  <span class="source-pill source-ks mr-1">KS</span>
+                  <span class="text-slate-300">DimeTime Disc</span>
+                </td>
+                <td class="py-3 pr-4 text-slate-400">可漂浮在水上</td>
+                <td class="py-3 text-white"><strong>户外漂浮水瓶</strong>：水上运动场景，荧光色易于寻找</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Dimension 4 -->
+      <div class="mb-6">
+        <h3 class="text-sm font-semibold text-emerald-300 mb-3 flex items-center gap-2">
+          <span class="w-6 h-6 rounded bg-emerald-500/20 text-emerald-300 flex items-center justify-center text-xs">4</span>
+          智能与场景延伸
+        </h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-left text-slate-400 border-b border-slate-700">
+                <th class="pb-3 pr-4 font-medium">原项目</th>
+                <th class="pb-3 pr-4 font-medium">原卖点</th>
+                <th class="pb-3 font-medium text-emerald-300">→ 迁移到水杯/水瓶</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="migrate-row border-b border-slate-800/50">
+                <td class="py-3 pr-4">
+                  <span class="source-pill source-ks mr-1">KS</span>
+                  <span class="text-slate-300">ALITY Planter</span>
+                </td>
+                <td class="py-3 pr-4 text-slate-400">自浇水 + 定时 + 温度指示</td>
+                <td class="py-3 text-white"><strong>智能温控杯</strong>：LED 温度环显示 + 定时饮水提醒</td>
+              </tr>
+              <tr class="migrate-row border-b border-slate-800/50">
+                <td class="py-3 pr-4">
+                  <span class="source-pill source-ks mr-1">KS</span>
+                  <span class="text-slate-300">Grizzie 247</span>
+                </td>
+                <td class="py-3 pr-4 text-slate-400">120小时防臭防污</td>
+                <td class="py-3 text-white"><strong>防异味内胆</strong>：纳米银离子涂层，抑制细菌减少异味</td>
+              </tr>
+              <tr class="migrate-row">
+                <td class="py-3 pr-4">
+                  <span class="source-pill source-ks mr-1">KS</span>
+                  <span class="text-slate-300">ProTek + Kenetik</span>
+                </td>
+                <td class="py-3 pr-4 text-slate-400">"Brain-Fuel" 功能性饮料</td>
+                <td class="py-3 text-white"><strong>功能性水杯</strong>：与补剂品牌联名，配合粉剂冲泡</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- 5 Product Concepts -->
+    <section>
+      <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
+        <span class="w-1 h-6 bg-rose-500 rounded-full"></span>
+        高潜力产品概念（可直接落地）
+      </h2>
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+
+        <div class="card-glass rounded-2xl p-5 concept-card border-t-4 border-t-sky-500">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-2xl">🔬</span>
+            <span class="tag tag-blue">概念 1</span>
+          </div>
+          <h3 class="text-base font-bold text-white mb-2">可视化浸泡杯</h3>
+          <p class="text-sm text-slate-400 mb-3">透明 Tritan 材质 + 可替换风味滤片</p>
+          <div class="space-y-1.5 mb-3">
+            <div class="text-xs text-slate-500 flex items-center gap-1.5"><span class="text-sky-400">•</span>水果水、冷泡茶、infused water</div>
+            <div class="text-xs text-slate-500 flex items-center gap-1.5"><span class="text-sky-400">•</span>Watch Your Water Transform</div>
+          </div>
+          <div class="text-xs text-slate-500 mt-2 pt-2 border-t border-slate-700/50">
+            对标：<span class="text-amber-400">Transparent Barrel 可视化</span>
+          </div>
+        </div>
+
+        <div class="card-glass rounded-2xl p-5 concept-card border-t-4 border-t-purple-500">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-2xl">〰️</span>
+            <span class="tag tag-purple">概念 2</span>
+          </div>
+          <h3 class="text-base font-bold text-white mb-2">纹理功能保温杯</h3>
+          <p class="text-sm text-slate-400 mb-3">杯身凸起纹理 = 防滑 + 结构加强</p>
+          <div class="space-y-1.5 mb-3">
+            <div class="text-xs text-slate-500 flex items-center gap-1.5"><span class="text-purple-400">•</span>户外、健身、通勤</div>
+            <div class="text-xs text-slate-500 flex items-center gap-1.5"><span class="text-purple-400">•</span>Not Just a Pattern</div>
+          </div>
+          <div class="text-xs text-slate-500 mt-2 pt-2 border-t border-slate-700/50">
+            对标：<span class="text-amber-400">Nambu Kettle arare 纹理</span>
+          </div>
+        </div>
+
+        <div class="card-glass rounded-2xl p-5 concept-card border-t-4 border-t-emerald-500">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-2xl">💎</span>
+            <span class="tag tag-green">概念 3</span>
+          </div>
+          <h3 class="text-base font-bold text-white mb-2">矿物释放健康杯</h3>
+          <p class="text-sm text-slate-400 mb-3">麦饭石/火山岩内胆释放微量元素</p>
+          <div class="space-y-1.5 mb-3">
+            <div class="text-xs text-slate-500 flex items-center gap-1.5"><span class="text-emerald-400">•</span>养生、办公、家庭</div>
+            <div class="text-xs text-slate-500 flex items-center gap-1.5"><span class="text-emerald-400">•</span>70x More Minerals</div>
+          </div>
+          <div class="text-xs text-slate-500 mt-2 pt-2 border-t border-slate-700/50">
+            对标：<span class="text-amber-400">Nambu Kettle 铁离子释放</span>
+          </div>
+        </div>
+
+        <div class="card-glass rounded-2xl p-5 concept-card border-t-4 border-t-amber-500">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-2xl">🌡️</span>
+            <span class="tag tag-orange">概念 4</span>
+          </div>
+          <h3 class="text-base font-bold text-white mb-2">智能温度指示杯</h3>
+          <p class="text-sm text-slate-400 mb-3">LED 温度环 + 定时饮水提醒</p>
+          <div class="space-y-1.5 mb-3">
+            <div class="text-xs text-slate-500 flex items-center gap-1.5"><span class="text-amber-400">•</span>办公、学习、运动</div>
+            <div class="text-xs text-slate-500 flex items-center gap-1.5"><span class="text-amber-400">•</span>See the Temperature</div>
+          </div>
+          <div class="text-xs text-slate-500 mt-2 pt-2 border-t border-slate-700/50">
+            对标：<span class="text-amber-400">ALITY Planter 智能指示</span>
+          </div>
+        </div>
+
+        <div class="card-glass rounded-2xl p-5 concept-card border-t-4 border-t-cyan-500 md:col-span-2 lg:col-span-1">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-2xl">🏊</span>
+            <span class="tag tag-blue">概念 5</span>
+          </div>
+          <h3 class="text-base font-bold text-white mb-2">漂浮户外水瓶</h3>
+          <p class="text-sm text-slate-400 mb-3">落水不沉 + 高可见度配色</p>
+          <div class="space-y-1.5 mb-3">
+            <div class="text-xs text-slate-500 flex items-center gap-1.5"><span class="text-cyan-400">•</span>泳池、海滩、皮划艇、桨板</div>
+            <div class="text-xs text-slate-500 flex items-center gap-1.5"><span class="text-cyan-400">•</span>Drop It, Don't Lose It</div>
+          </div>
+          <div class="text-xs text-slate-500 mt-2 pt-2 border-t border-slate-700/50">
+            对标：<span class="text-amber-400">DimeTime Disc 漂浮特性</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- Action Items -->
+    <section>
+      <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
+        <span class="w-1 h-6 bg-emerald-500 rounded-full"></span>
+        下一步行动建议
+      </h2>
+      <div class="grid md:grid-cols-2 gap-4">
+        <div class="card-glass rounded-xl p-4 flex items-start gap-3">
+          <span class="w-8 h-8 rounded-lg bg-blue-500/20 text-blue-300 flex items-center justify-center text-sm font-bold shrink-0">1</span>
+          <div>
+            <div class="text-sm font-medium text-white">重点跟进</div>
+            <div class="text-xs text-slate-400 mt-0.5">Nambu Iron Kettle 和 Transparent Barrel 的后续表现，看是否有升级款或配件</div>
+          </div>
+        </div>
+        <div class="card-glass rounded-xl p-4 flex items-start gap-3">
+          <span class="w-8 h-8 rounded-lg bg-purple-500/20 text-purple-300 flex items-center justify-center text-sm font-bold shrink-0">2</span>
+          <div>
+            <div class="text-sm font-medium text-white">市场验证</div>
+            <div class="text-xs text-slate-400 mt-0.5">搜索亚马逊"纹理保温杯""透明水杯""麦饭石杯"的市场容量和竞争度</div>
+          </div>
+        </div>
+        <div class="card-glass rounded-xl p-4 flex items-start gap-3">
+          <span class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-300 flex items-center justify-center text-sm font-bold shrink-0">3</span>
+          <div>
+            <div class="text-sm font-medium text-white">Sorftime 验证</div>
+            <div class="text-xs text-slate-400 mt-0.5">验证"可视化水杯""矿物质释放杯"等关键词的搜索趋势</div>
+          </div>
+        </div>
+        <div class="card-glass rounded-xl p-4 flex items-start gap-3">
+          <span class="w-8 h-8 rounded-lg bg-rose-500/20 text-rose-300 flex items-center justify-center text-sm font-bold shrink-0">4</span>
+          <div>
+            <div class="text-sm font-medium text-white">优先调研</div>
+            <div class="text-xs text-slate-400 mt-0.5">概念 1（可视化浸泡杯）和概念 3（矿物释放健康杯）最具差异化潜力</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="text-center text-xs text-slate-600 pt-8 pb-4">
+      数据来源：Kickstarter + Indiegogo 147 个项目（2025.03.01 至今）· 生成时间：2026-05-10
+    </footer>
+  </main>
+
+  <script>
+    // Scroll indicator
+    window.addEventListener('scroll', () => {
+      const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+      const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const progress = (scrollTop / scrollHeight) * 100;
+      document.getElementById('scrollBar').style.width = progress + '%';
+    });
+
+    // Category Chart
+    const ctx = document.getElementById('categoryChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['科技/设计', '游戏', '漫画/出版', '食品/饮料', '其他', '饮水器皿'],
+        datasets: [{
+          data: [35, 28, 22, 8, 5.6, 1.4],
+          backgroundColor: [
+            'rgba(59,130,246,0.7)',
+            'rgba(139,92,246,0.7)',
+            'rgba(236,72,153,0.7)',
+            'rgba(249,115,22,0.7)',
+            'rgba(148,163,184,0.4)',
+            'rgba(34,197,94,0.8)'
+          ],
+          borderColor: 'rgba(15,23,42,0.8)',
+          borderWidth: 2,
+          hoverOffset: 8
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+          legend: {
+            position: 'right',
+            labels: {
+              color: '#94a3b8',
+              font: { size: 12 },
+              padding: 16,
+              usePointStyle: true,
+              pointStyle: 'circle'
+            }
+          },
+          tooltip: {
+            backgroundColor: 'rgba(15,23,42,0.95)',
+            titleColor: '#e2e8f0',
+            bodyColor: '#94a3b8',
+            borderColor: 'rgba(148,163,184,0.2)',
+            borderWidth: 1,
+            padding: 12,
+            callbacks: {
+              label: function(context) {
+                return context.label + ': ' + context.parsed + '%';
+              }
+            }
+          }
+        },
+        cutout: '60%'
+      }
+    });
+  </script>
+</body>
+</html>
