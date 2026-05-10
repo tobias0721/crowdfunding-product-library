@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>漂浮水瓶市场调研报告</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+body { font-family: 'Inter','Noto Sans SC',sans-serif; background: #0b1121; color: #cbd5e1; }
+.glass { background: rgba(30,41,59,0.6); backdrop-filter: blur(10px); border: 1px solid rgba(148,163,184,0.08); }
+.glass-border { border: 1px solid rgba(148,163,184,0.1); }
+.gradient-text { background: linear-gradient(135deg,#60a5fa,#a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.tag { display:inline-flex; align-items:center; gap:4px; padding:2px 10px; border-radius:999px; font-size:12px; font-weight:500; }
+.tag-blue { background:rgba(59,130,246,0.12); color:#93c5fd; border:1px solid rgba(59,130,246,0.25); }
+.tag-red { background:rgba(239,68,68,0.12); color:#fca5a5; border:1px solid rgba(239,68,68,0.25); }
+.tag-green { background:rgba(34,197,94,0.12); color:#86efac; border:1px solid rgba(34,197,94,0.25); }
+.tag-amber { background:rgba(245,158,11,0.12); color:#fcd34d; border:1px solid rgba(245,158,11,0.25); }
+.positive { color:#4ade80; }
+.negative { color:#f87171; }
+.neutral { color:#94a3b8; }
+.divider { height:1px; background:linear-gradient(90deg,transparent,rgba(148,163,184,0.15),transparent); }
+.metric { font-size:2.2rem; font-weight:700; line-height:1; }
+</style>
+</head>
+<body class="min-h-screen">
+
+<header class="sticky top-0 z-40 glass border-b border-slate-700/20">
+<div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-white font-bold">F</div>
+<div>
+<h1 class="text-base font-bold text-white">漂浮水瓶市场调研</h1>
+<p class="text-xs text-slate-500">Amazon US 数据 · 2026.05.10</p>
+</div>
+</div>
+<span class="tag tag-green">蓝海机会</span>
+</div>
+</header>
+
+<main class="max-w-6xl mx-auto px-6 py-8 space-y-10">
+
+<!-- Top Metrics -->
+<section class="grid grid-cols-2 md:grid-cols-4 gap-4">
+<div class="glass rounded-2xl p-5 text-center">
+<div class="metric gradient-text">1</div>
+<div class="text-xs text-slate-400 mt-1">竖直漂浮竞品</div>
+<div class="text-[11px] text-slate-600 mt-1">Buoya 独家</div>
+</div>
+<div class="glass rounded-2xl p-5 text-center">
+<div class="metric text-red-400">3.5★</div>
+<div class="text-xs text-slate-400 mt-1">竞品评分</div>
+<div class="text-[11px] text-slate-600 mt-1">仅20条评论</div>
+</div>
+<div class="glass rounded-2xl p-5 text-center">
+<div class="metric text-amber-400">$49</div>
+<div class="text-xs text-slate-400 mt-1">竞品定价</div>
+<div class="text-[11px] text-slate-600 mt-1">价格偏高</div>
+</div>
+<div class="glass rounded-2xl p-5 text-center">
+<div class="metric text-emerald-400">~35</div>
+<div class="text-xs text-slate-400 mt-1">漂浮类相关产品</div>
+<div class="text-[11px] text-slate-600 mt-1">饮料架为主</div>
+</div>
+</section>
+
+<!-- Key Insight -->
+<section class="glass rounded-2xl p-6 border-l-4 border-l-emerald-500">
+<h2 class="text-base font-bold text-white mb-3 flex items-center gap-2">
+<span class="text-emerald-400">●</span> 核心发现
+</h2>
+<p class="text-sm text-slate-300 leading-relaxed">
+Amazon上搜索"floating water bottle"有 <strong class="text-white">407</strong> 个结果，但<strong class="text-emerald-400">真正能让水瓶本身竖直漂浮的产品只有1个</strong>（Buoya）。其余全是<strong class="text-slate-400">漂浮饮料架</strong>（holder/floatie）或<strong class="text-slate-400">漂浮酒杯</strong>（pool wine glass）。<br><br>
+Buoya 评分仅 <strong class="text-red-400">3.5★</strong>，评论 <strong class="text-red-400">20条</strong>，且集中抱怨<strong class="text-white">容量虚标、漂浮时杯口近水面、保温失效</strong>。这意味着：<strong class="text-emerald-400">市场上没有一款真正解决用户痛点的漂浮保温杯</strong>。
+</p>
+</section>
+
+<!-- Competitor Deep Dive -->
+<section>
+<h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+<span class="w-1 h-5 bg-red-500 rounded-full"></span>
+唯一竞品深度拆解：Buoya
+</h2>
+<div class="glass rounded-2xl p-5">
+<div class="grid md:grid-cols-3 gap-5 mb-5">
+<div class="text-center p-3 bg-slate-800/40 rounded-xl">
+<div class="text-2xl font-bold text-red-400">$49.41</div>
+<div class="text-xs text-slate-500 mt-1">定价</div>
+</div>
+<div class="text-center p-3 bg-slate-800/40 rounded-xl">
+<div class="text-2xl font-bold text-red-400">3.5★</div>
+<div class="text-xs text-slate-500 mt-1">评分（20评论）</div>
+</div>
+<div class="text-center p-3 bg-slate-800/40 rounded-xl">
+<div class="text-2xl font-bold text-red-400">12oz</div>
+<div class="text-xs text-slate-500 mt-1">标称容量（实际~8oz）</div>
+</div>
+</div>
+
+<h3 class="text-sm font-semibold text-white mb-3">用户集中抱怨的5大问题</h3>
+<div class="space-y-3">
+<div class="flex gap-3 p-3 bg-red-500/5 rounded-xl border border-red-500/10">
+<span class="text-red-400 font-bold text-sm shrink-0">#1</span>
+<div>
+<div class="text-sm font-medium text-white">容量虚标近33%</div>
+<div class="text-xs text-slate-400 mt-0.5">标称12oz，实际只能装~8oz。底部实心配重占比过大，"一半重量一半空间"。</div>
+</div>
+</div>
+<div class="flex gap-3 p-3 bg-red-500/5 rounded-xl border border-red-500/10">
+<span class="text-red-400 font-bold text-sm shrink-0">#2</span>
+<div>
+<div class="text-sm font-medium text-white">漂浮时杯口贴近水面</div>
+<div class="text-xs text-slate-400 mt-0.5">"漂浮时几乎浮到杯子顶部边缘" — 液体容易与池水接触或溢出，卫生隐患。</div>
+</div>
+</div>
+<div class="flex gap-3 p-3 bg-red-500/5 rounded-xl border border-red-500/10">
+<span class="text-red-400 font-bold text-sm shrink-0">#3</span>
+<div>
+<div class="text-sm font-medium text-white">保温功能失效</div>
+<div class="text-xs text-slate-400 mt-0.5">用户明确反馈"不能保持饮料的冷或热"，与宣传的真空隔热严重不符。</div>
+</div>
+</div>
+<div class="flex gap-3 p-3 bg-red-500/5 rounded-xl border border-red-500/10">
+<span class="text-red-400 font-bold text-sm shrink-0">#4</span>
+<div>
+<div class="text-sm font-medium text-white">体积大、重量沉</div>
+<div class="text-xs text-slate-400 mt-0.5">21.6cm高、635g重，但容量仅8oz。又大又重却装不了多少。</div>
+</div>
+</div>
+<div class="flex gap-3 p-3 bg-red-500/5 rounded-xl border border-red-500/10">
+<span class="text-red-400 font-bold text-sm shrink-0">#5</span>
+<div>
+<div class="text-sm font-medium text-white">仅限手洗</div>
+<div class="text-xs text-slate-400 mt-0.5">不可洗碗机清洗，维护不便。对于户外/泳池场景来说非常麻烦。</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<div class="divider"></div>
+
+<!-- Market Segments -->
+<section>
+<h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+<span class="w-1 h-5 bg-blue-500 rounded-full"></span>
+现有市场格局：三大阵营
+</h2>
+<div class="grid md:grid-cols-3 gap-5">
+
+<!-- Camp 1 -->
+<div class="glass rounded-2xl p-5">
+<div class="flex items-center gap-2 mb-3">
+<span class="text-xl">🛟</span>
+<h3 class="text-sm font-bold text-white">漂浮饮料架</h3>
+</div>
+<div class="text-xs text-slate-400 mb-3">数量最多，但只是"托着"杯子</div>
+<div class="space-y-2 mb-3">
+<div class="flex justify-between text-xs"><span class="text-slate-400">Human Bobber</span><span class="text-slate-500">4.4★ 970评</span></div>
+<div class="flex justify-between text-xs"><span class="text-slate-400">DIVEBLAST</span><span class="text-slate-500">4.4★ 2,717评</span></div>
+<div class="flex justify-between text-xs"><span class="text-slate-400">氯丁橡胶杯垫</span><span class="text-slate-500">4.1-4.8★</span></div>
+<div class="flex justify-between text-xs"><span class="text-slate-400">充气造型款</span><span class="text-slate-500">4.2-4.6★</span></div>
+</div>
+<div class="text-xs text-slate-500 pt-2 border-t border-slate-700/50">
+价格：$12 - $30<br>
+痛点：需要额外携带，杯子本身不防沉
+</div>
+</div>
+
+<!-- Camp 2 -->
+<div class="glass rounded-2xl p-5">
+<div class="flex items-center gap-2 mb-3">
+<span class="text-xl">🍷</span>
+<h3 class="text-sm font-bold text-white">漂浮酒杯</h3>
+</div>
+<div class="text-xs text-slate-400 mb-3">泳池派对场景，但非日常水杯</div>
+<div class="space-y-2 mb-3">
+<div class="flex justify-between text-xs"><span class="text-slate-400">BubbleWally</span><span class="text-slate-500">4.6★ 1,123评</span></div>
+<div class="flex justify-between text-xs"><span class="text-slate-400">Pool Floating Glass</span><span class="text-slate-500">4.3-4.6★</span></div>
+<div class="flex justify-between text-xs"><span class="text-slate-400">Tritan材质杯</span><span class="text-slate-500">4.0-4.6★</span></div>
+</div>
+<div class="text-xs text-slate-500 pt-2 border-t border-slate-700/50">
+价格：$25 - $50（套装）<br>
+痛点：无保温、容量小、仅限派对
+</div>
+</div>
+
+<!-- Camp 3 -->
+<div class="glass rounded-2xl p-5 border border-emerald-500/20">
+<div class="flex items-center gap-2 mb-3">
+<span class="text-xl">🏆</span>
+<h3 class="text-sm font-bold text-emerald-400">竖直漂浮保温杯</h3>
+</div>
+<div class="text-xs text-emerald-400/70 mb-3">市场空白！无合格产品</div>
+<div class="space-y-2 mb-3">
+<div class="flex justify-between text-xs"><span class="text-slate-400">Buoya（唯一）</span><span class="text-red-400">3.5★ 20评</span></div>
+<div class="flex justify-between text-xs"><span class="text-slate-400">其他品牌</span><span class="text-slate-600">暂无</span></div>
+</div>
+<div class="text-xs text-emerald-400/80 pt-2 border-t border-emerald-500/20">
+<strong>机会点：</strong>保温杯 + 竖直漂浮 + 大容量<br>
+<strong>定价空间：</strong>$25 - $40
+</div>
+</div>
+</div>
+</section>
+
+<div class="divider"></div>
+
+<!-- Price Chart -->
+<section>
+<h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+<span class="w-1 h-5 bg-purple-500 rounded-full"></span>
+价格带分布 & 定位空间
+</h2>
+<div class="glass rounded-2xl p-6">
+<div class="grid md:grid-cols-2 gap-6 items-center">
+<div>
+<canvas id="priceChart" height="220"></canvas>
+</div>
+<div class="space-y-3">
+<div class="p-3 bg-slate-800/40 rounded-xl">
+<div class="text-xs text-slate-500 mb-1">低端：漂浮饮料架</div>
+<div class="text-sm text-white">$12 - $20</div>
+<div class="text-xs text-slate-400">充气/氯丁橡胶材质，只是配件</div>
+</div>
+<div class="p-3 bg-slate-800/40 rounded-xl">
+<div class="text-xs text-slate-500 mb-1">中端：漂浮酒杯套装</div>
+<div class="text-sm text-white">$25 - $40</div>
+<div class="text-xs text-slate-400">Tritan材质，无保温，派对场景</div>
+</div>
+<div class="p-3 bg-emerald-500/10 rounded-xl border border-emerald-500/20">
+<div class="text-xs text-emerald-400 mb-1">蓝海定位：竖直漂浮保温杯</div>
+<div class="text-sm text-white font-medium">$30 - $45</div>
+<div class="text-xs text-emerald-400/70">保温杯 + 竖直漂浮 + 大容量 = 差异化</div>
+</div>
+<div class="p-3 bg-red-500/5 rounded-xl border border-red-500/10">
+<div class="text-xs text-red-400 mb-1">竞品错误定价：Buoya</div>
+<div class="text-sm text-white">$49</div>
+<div class="text-xs text-red-400/70">产品差 + 定价高 = 评分3.5</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<div class="divider"></div>
+
+<!-- Demand Validation -->
+<section>
+<h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+<span class="w-1 h-5 bg-amber-500 rounded-full"></span>
+需求验证：漂浮类产品的销量信号
+</h2>
+<div class="grid md:grid-cols-2 gap-5">
+<div class="glass rounded-2xl p-5">
+<h3 class="text-sm font-bold text-white mb-3">高销量信号（间接验证需求）</h3>
+<div class="space-y-2">
+<div class="flex items-center justify-between p-2 bg-slate-800/30 rounded-lg">
+<span class="text-xs text-slate-300">DIVEBLAST 饮料架</span>
+<span class="text-xs text-amber-400 font-medium">2,717 评论</span>
+</div>
+<div class="flex items-center justify-between p-2 bg-slate-800/30 rounded-lg">
+<span class="text-xs text-slate-300">BubbleWally 漂浮酒杯</span>
+<span class="text-xs text-amber-400 font-medium">1,123 评论</span>
+</div>
+<div class="flex items-center justify-between p-2 bg-slate-800/30 rounded-lg">
+<span class="text-xs text-slate-300">Human Bobber 饮料架</span>
+<span class="text-xs text-amber-400 font-medium">970 评论</span>
+</div>
+<div class="flex items-center justify-between p-2 bg-slate-800/30 rounded-lg">
+<span class="text-xs text-slate-300">FEEBRIA 充气饮料架</span>
+<span class="text-xs text-amber-400 font-medium">1,063 评论</span>
+</div>
+<div class="flex items-center justify-between p-2 bg-slate-800/30 rounded-lg">
+<span class="text-xs text-slate-300">Zcaukya 12只装</span>
+<span class="text-xs text-amber-400 font-medium">999 评论</span>
+</div>
+</div>
+<div class="mt-3 text-xs text-slate-500">
+→ 漂浮配件类产品有大量需求，但用户真正需要的是<strong class="text-white">"杯子本身能漂浮"</strong>的解决方案
+</div>
+</div>
+<div class="glass rounded-2xl p-5">
+<h3 class="text-sm font-bold text-white mb-3">用户场景痛点（从评论中提取）</h3>
+<div class="space-y-2.5">
+<div class="flex gap-2 text-xs">
+<span class="text-red-400 shrink-0">✗</span>
+<span class="text-slate-300">饮料架需要额外携带，出门忘带就白搭</span>
+</div>
+<div class="flex gap-2 text-xs">
+<span class="text-red-400 shrink-0">✗</span>
+<span class="text-slate-300">普通水杯落水后沉底，打捞困难</span>
+</div>
+<div class="flex gap-2 text-xs">
+<span class="text-red-400 shrink-0">✗</span>
+<span class="text-slate-300">漂浮酒杯没有保温，冰块很快就化</span>
+</div>
+<div class="flex gap-2 text-xs">
+<span class="text-red-400 shrink-0">✗</span>
+<span class="text-slate-300">Buoya容量太小，喝几口就没了</span>
+</div>
+<div class="flex gap-2 text-xs">
+<span class="text-red-400 shrink-0">✗</span>
+<span class="text-slate-300">漂浮时杯口沾水，不卫生</span>
+</div>
+<div class="flex gap-2 text-xs">
+<span class="text-red-400 shrink-0">✗</span>
+<span class="text-slate-300">泳池/海里看不清杯子在哪</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<div class="divider"></div>
+
+<!-- Opportunity Matrix -->
+<section>
+<h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+<span class="w-1 h-5 bg-emerald-500 rounded-full"></span>
+产品机会矩阵：我们的差异化定位
+</h2>
+<div class="overflow-x-auto">
+<table class="w-full text-sm">
+<thead>
+<tr class="text-left text-slate-400 border-b border-slate-700">
+<th class="pb-3 pr-4 font-medium">功能维度</th>
+<th class="pb-3 pr-4 font-medium text-center">Buoya（竞品）</th>
+<th class="pb-3 pr-4 font-medium text-center">漂浮饮料架</th>
+<th class="pb-3 pr-4 font-medium text-center">漂浮酒杯</th>
+<th class="pb-3 font-medium text-center text-emerald-400">我们的机会</th>
+</tr>
+</thead>
+<tbody>
+<tr class="border-b border-slate-800/50">
+<td class="py-3 pr-4 text-slate-300">竖直漂浮</td>
+<td class="py-3 pr-4 text-center text-amber-400">★★☆（杯口近水面）</td>
+<td class="py-3 pr-4 text-center text-slate-600">—</td>
+<td class="py-3 pr-4 text-center text-slate-600">—</td>
+<td class="py-3 text-center text-emerald-400 font-medium">★★★（瓶口高出水面）</td>
+</tr>
+<tr class="border-b border-slate-800/50">
+<td class="py-3 pr-4 text-slate-300">保温保冷</td>
+<td class="py-3 pr-4 text-center text-red-400">★☆☆（用户说失效）</td>
+<td class="py-3 pr-4 text-center text-slate-600">—</td>
+<td class="py-3 pr-4 text-center text-slate-600">—</td>
+<td class="py-3 text-center text-emerald-400 font-medium">★★★（真空保温）</td>
+</tr>
+<tr class="border-b border-slate-800/50">
+<td class="py-3 pr-4 text-slate-300">容量</td>
+<td class="py-3 pr-4 text-center text-red-400">~8oz（虚标12oz）</td>
+<td class="py-3 pr-4 text-center text-slate-600">—</td>
+<td class="py-3 pr-4 text-center text-amber-400">16-21oz</td>
+<td class="py-3 text-center text-emerald-400 font-medium">20-30oz（实标）</td>
+</tr>
+<tr class="border-b border-slate-800/50">
+<td class="py-3 pr-4 text-slate-300">高可见度配色</td>
+<td class="py-3 pr-4 text-center text-slate-600">无</td>
+<td class="py-3 pr-4 text-center text-slate-600">无</td>
+<td class="py-3 pr-4 text-center text-slate-600">无</td>
+<td class="py-3 text-center text-emerald-400 font-medium">★★★（荧光色+反光条）</td>
+</tr>
+<tr class="border-b border-slate-800/50">
+<td class="py-3 pr-4 text-slate-300">防浪密封</td>
+<td class="py-3 pr-4 text-center text-amber-400">普通盖</td>
+<td class="py-3 pr-4 text-center text-slate-600">—</td>
+<td class="py-3 pr-4 text-center text-slate-600">—</td>
+<td class="py-3 text-center text-emerald-400 font-medium">★★★（磁吸/卡扣密封）</td>
+</tr>
+<tr class="border-b border-slate-800/50">
+<td class="py-3 pr-4 text-slate-300">多场景适配</td>
+<td class="py-3 pr-4 text-center text-amber-400">泳池/湖泊</td>
+<td class="py-3 pr-4 text-center text-slate-600">仅限静止水面</td>
+<td class="py-3 pr-4 text-center text-slate-600">仅限派对</td>
+<td class="py-3 text-center text-emerald-400 font-medium">★★★（泳池/海钓/桨板/船）</td>
+</tr>
+<tr>
+<td class="py-3 pr-4 text-slate-300">模块化配重</td>
+<td class="py-3 pr-4 text-center text-slate-600">固定配重</td>
+<td class="py-3 pr-4 text-center text-slate-600">—</td>
+<td class="py-3 pr-4 text-center text-slate-600">—</td>
+<td class="py-3 text-center text-emerald-400 font-medium">★★★（可拆卸底座）</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<div class="divider"></div>
+
+<!-- Target User -->
+<section>
+<h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+<span class="w-1 h-5 bg-cyan-500 rounded-full"></span>
+目标用户画像
+</h2>
+<div class="grid md:grid-cols-3 gap-4">
+<div class="glass rounded-xl p-4">
+<div class="text-2xl mb-2">🏊</div>
+<div class="text-sm font-bold text-white mb-1">泳池休闲族</div>
+<div class="text-xs text-slate-400">家庭泳池/公共泳池用户，不想杯子沉底，希望边泡水边喝水</div>
+</div>
+<div class="glass rounded-xl p-4">
+<div class="text-2xl mb-2">🛶</div>
+<div class="text-sm font-bold text-white mb-1">水上运动爱好者</div>
+<div class="text-xs text-slate-400">皮划艇、桨板、漂流用户，杯子掉落水面不沉，荧光色易找回</div>
+</div>
+<div class="glass rounded-xl p-4">
+<div class="text-2xl mb-2">🎣</div>
+<div class="text-sm font-bold text-white mb-1">海钓/船钓人群</div>
+<div class="text-xs text-slate-400">船上使用，抗浪稳，重配重底座不易被打翻，保温保持冷饮温度</div>
+</div>
+</div>
+</section>
+
+<div class="divider"></div>
+
+<!-- Financial Projection -->
+<section>
+<h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+<span class="w-1 h-5 bg-amber-500 rounded-full"></span>
+粗略盈利测算
+</h2>
+<div class="glass rounded-2xl p-6">
+<div class="grid md:grid-cols-4 gap-4 mb-5">
+<div class="text-center p-3 bg-slate-800/40 rounded-xl">
+<div class="text-lg font-bold text-white">$30-35</div>
+<div class="text-xs text-slate-500 mt-1">建议售价</div>
+</div>
+<div class="text-center p-3 bg-slate-800/40 rounded-xl">
+<div class="text-lg font-bold text-white">$12-15</div>
+<div class="text-xs text-slate-500 mt-1">预估成本（含包装）</div>
+</div>
+<div class="text-center p-3 bg-slate-800/40 rounded-xl">
+<div class="text-lg font-bold text-emerald-400">$15-20</div>
+<div class="text-xs text-slate-500 mt-1">毛利/件</div>
+</div>
+<div class="text-center p-3 bg-slate-800/40 rounded-xl">
+<div class="text-lg font-bold text-emerald-400">50-60%</div>
+<div class="text-xs text-slate-500 mt-1">毛利率</div>
+</div>
+</div>
+<div class="text-xs text-slate-500">
+<p class="mb-1">保守预估：首年 500-1,000 月销量（对标 Buoya 的 20 评论，说明市场教育刚起步）</p>
+<p class="mb-1">乐观预估：若产品体验好，借助夏季季节性，可达 2,000-3,000 月销量</p>
+<p>年营收潜力：$180K - $1.26M（取决于运营和季节）</p>
+</div>
+</div>
+</section>
+
+<div class="divider"></div>
+
+<!-- Risk & Next Steps -->
+<section class="grid md:grid-cols-2 gap-5">
+<div class="glass rounded-2xl p-5">
+<h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
+<span class="text-red-400">⚠</span> 风险点
+</h3>
+<div class="space-y-2 text-xs text-slate-400">
+<div class="flex gap-2"><span class="text-red-400 shrink-0">•</span><span>供应链：需要找到能做三层结构（真空层+泡沫层+配重底座）的工厂</span></div>
+<div class="flex gap-2"><span class="text-red-400 shrink-0">•</span><span>认证：食品接触材料认证（FDA/LFGB）+ 保温性能测试</span></div>
+<div class="flex gap-2"><span class="text-red-400 shrink-0">•</span><span>季节性：泳池场景集中在 5-9 月，需要反季营销策略</span></div>
+<div class="flex gap-2"><span class="text-red-400 shrink-0">•</span><span>专利：Buoya 可能有相关专利，需要检索规避</span></div>
+<div class="flex gap-2"><span class="text-red-400 shrink-0">•</span><span>重量：配重底座会增加运输成本（FBA 重量分级）</span></div>
+</div>
+</div>
+<div class="glass rounded-2xl p-5">
+<h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
+<span class="text-emerald-400">→</span> 下一步行动
+</h3>
+<div class="space-y-2 text-xs text-slate-400">
+<div class="flex gap-2"><span class="text-emerald-400 shrink-0">1.</span><span><strong class="text-white">专利检索</strong>：搜索 Buoya 相关专利，确认设计空间</span></div>
+<div class="flex gap-2"><span class="text-emerald-400 shrink-0">2.</span><span><strong class="text-white">3D 打样</strong>：做 1-2 个手板验证重心和浮力计算</span></div>
+<div class="flex gap-2"><span class="text-emerald-400 shrink-0">3.</span><span><strong class="text-white">工厂询价</strong>：找能做复合结构的保温杯厂（永康/深圳）</span></div>
+<div class="flex gap-2"><span class="text-emerald-400 shrink-0">4.</span><span><strong class="text-white">Sorftime 深度验证</strong>：查"pool tumbler""floating cup"搜索量和竞品销量</span></div>
+<div class="flex gap-2"><span class="text-emerald-400 shrink-0">5.</span><span><strong class="text-white">众筹试水</strong>：Kickstarter/Indiegogo 验证需求，积累种子用户</span></div>
+</div>
+</div>
+</section>
+
+<!-- Footer -->
+<footer class="text-center text-xs text-slate-700 pt-8 pb-4">
+数据来源：Amazon.com 搜索结果 + WebFetch 抓取 · 生成时间：2026-05-10 · 仅供内部参考
+</footer>
+</main>
+
+<script>
+const ctx = document.getElementById('priceChart').getContext('2d');
+new Chart(ctx, {
+  type: 'bar',
+  data: {
+    labels: ['充气饮料架', '氯丁橡胶杯垫', '漂浮酒杯套装', '竖直漂浮杯（Buoya）', '我们的定位'],
+    datasets: [{
+      label: '价格 (USD)',
+      data: [15, 22, 32, 49, 35],
+      backgroundColor: [
+        'rgba(148,163,184,0.5)',
+        'rgba(148,163,184,0.5)',
+        'rgba(148,163,184,0.5)',
+        'rgba(239,68,68,0.6)',
+        'rgba(34,197,94,0.7)'
+      ],
+      borderColor: [
+        'rgba(148,163,184,0.8)',
+        'rgba(148,163,184,0.8)',
+        'rgba(148,163,184,0.8)',
+        'rgba(239,68,68,1)',
+        'rgba(34,197,94,1)'
+      ],
+      borderWidth: 1,
+      borderRadius: 6
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: true,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: 'rgba(15,23,42,0.95)',
+        titleColor: '#e2e8f0',
+        bodyColor: '#94a3b8',
+        borderColor: 'rgba(148,163,184,0.2)',
+        borderWidth: 1
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        grid: { color: 'rgba(148,163,184,0.08)' },
+        ticks: { color: '#64748b', font: { size: 11 } }
+      },
+      x: {
+        grid: { display: false },
+        ticks: { color: '#94a3b8', font: { size: 11 } }
+      }
+    }
+  }
+});
+</script>
+</body>
+</html>
