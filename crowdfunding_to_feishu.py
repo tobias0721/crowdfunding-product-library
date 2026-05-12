@@ -14,6 +14,34 @@ BASE_TOKEN = "YVvgbBsyVaMFz0sbOFhcO9Jln7g"
 TABLE_ID = "tblmUS3FqJBwvOUd"
 OUTPUT_DIR = os.path.dirname(os.path.abspath(__file__))
 
+# 需要过滤掉的品类（与电商相关度低）
+# 规则：
+#   - 多词关键词（含空格）使用子串匹配
+#   - 单词关键词使用完整单词匹配（避免 "art" 误杀 "smart"）
+#   - URL路径使用 /keyword/ 匹配
+#   - 【2026-05-11】卡牌/桌游/塔罗/骰子/RPG 类暂不过滤，保留进表
+FILTERED_CATEGORIES = {
+    # 书籍/文学/漫画
+    "book", "books", "comic", "comics", "novel", "literature", "magazine",
+    "manga", "graphic novel", "photobook", "art book", "photo book",
+    # App/软件/平台
+    "app", "application", "software", "platform",
+    # 音乐/专辑/唱片
+    "music", "album", "ep", "single", "record", "vinyl", "soundtrack", "lp",
+    # 电影/视频/短片
+    "film", "movie", "short film", "documentary", "podcast", "video",
+    # 食物/餐饮
+    "food", "cooking", "recipe", "restaurant", "bakery", "cookie", "pastry", "cuisine",
+    # 艺术/绘画（仅匹配完整短语，避免误杀）
+    "painting collection", "art book", "photo book", "photobook",
+    # 3D打印模型
+    "stl files", "3d printable", "miniature", "terrain",
+    # 中文关键词
+    "书籍", "漫画", "小说", "摄影集", "绘画", "艺术书",
+    "音乐", "专辑", "电影",
+    "食物", "食谱", "饼干", "糕点", "餐厅",
+}
+
 CATEGORY_MAP = {
     "產品設計": "科技",
     "設計": "科技",
@@ -98,6 +126,51 @@ def get_existing_urls():
     return existing
 
 
+def should_filter(project):
+    """判断项目是否应该被过滤（与电商相关度低）
+    规则：
+      - 多词关键词（含空格）使用子串匹配（名称/品类/URL）
+      - 英文单词关键词使用完整单词匹配（避免 "art" 误杀 "smart"）
+      - 中文关键词使用子串匹配（中文无空格分词）
+      - URL路径使用 /keyword/ 匹配
+    """
+    import re
+
+    name = project.get("name", "").lower()
+    cat = (project.get("category", "") or project.get("sub_category", "")).lower()
+    url = project.get("url", "").lower()
+
+    # 将名称拆分为单词（仅用于英文完整单词匹配）
+    name_words = re.findall(r'[a-zA-Z]+', name)
+
+    for keyword in FILTERED_CATEGORIES:
+        kw_lower = keyword.lower()
+
+        # 多词关键词（含空格）使用子串匹配
+        if ' ' in kw_lower:
+            if kw_lower in name or kw_lower in cat or kw_lower in url:
+                return True, keyword
+            continue
+
+        # 中文关键词：子串匹配
+        if re.search(r'[\u4e00-\u9fff]', kw_lower):
+            if kw_lower in name or kw_lower in cat:
+                return True, keyword
+            continue
+
+        # 英文单词：完整单词匹配（名称分词）
+        if kw_lower in name_words:
+            return True, keyword
+        # 品类匹配
+        if kw_lower in cat:
+            return True, keyword
+        # URL路径匹配
+        if f'/{kw_lower}/' in url:
+            return True, keyword
+
+    return False, None
+
+
 def map_category(project):
     """映射品类"""
     platform = project.get("platform", "")
@@ -119,13 +192,38 @@ def format_datetime(dt):
     return dt.strftime("%Y/%m/%d %H:%M")
 
 
+def get_project_created_date(project):
+    """获取项目创建时间
+    Kickstarter: 使用 launched_at 时间戳
+    Indiegogo: 使用当前日期（无创建时间字段）
+    """
+    platform = project.get("platform", "")
+    launched_at = project.get("launched_at")
+
+    if platform == "Kickstarter" and launched_at:
+        try:
+            dt = datetime.fromtimestamp(launched_at)
+            return dt.strftime("%Y/%m/%d")
+        except (TypeError, ValueError, OSError):
+            pass
+
+    # Indiegogo 或无法解析时，使用当前日期
+    return datetime.now(timezone.utc).astimezone().strftime("%Y/%m/%d")
+
+
 def write_to_feishu(project):
     """写入单条记录到飞书"""
+    # 先检查是否需要过滤
+    should_skip, keyword = should_filter(project)
+    if should_skip:
+        print(f"  🚫 已过滤 [{project.get('platform', 'Unknown')}] {project['name'][:50]}... (原因: {keyword})")
+        return "filtered"
+
     category = map_category(project)
     platform = project.get("platform", "Unknown")
     pledged = project.get("pledged", 0)
     backers = project.get("backers_count", 0)
-    now = datetime.now(timezone.utc).astimezone()
+    created_date = get_project_created_date(project)
 
     record = {
         "项目名": project.get("name", "")[:200],
@@ -135,7 +233,7 @@ def write_to_feishu(project):
         "支持者数": int(backers),
         "品类": category,
         "状态": "待分析",
-        "更新时间": format_datetime(now),
+        "更新时间": created_date,
     }
 
     cmd = [
@@ -154,6 +252,13 @@ def write_to_feishu(project):
         err = result.stderr[:150]
         print(f"  ❌ [{platform}] {project['name'][:50]} | {err}")
         return False
+
+
+# 兼容旧调用：返回布尔值时过滤的项目也算"成功"（未写入但已处理）
+def write_to_feishu_compat(project):
+    """兼容旧接口，过滤的项目返回 True（表示已处理）"""
+    result = write_to_feishu(project)
+    return result if isinstance(result, bool) else True
 
 
 def load_kickstarter():
@@ -175,9 +280,29 @@ def load_indiegogo():
         return json.load(f)
 
 
+def load_makuake():
+    """加载最新的 Makuake 数据"""
+    files = glob.glob(os.path.join(OUTPUT_DIR, "makuake_projects_*.json"))
+    if not files:
+        return []
+    latest = max(files)
+    with open(latest, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def load_wadiz():
+    """加载最新的 Wadiz 数据"""
+    files = glob.glob(os.path.join(OUTPUT_DIR, "wadiz_projects_*.json"))
+    if not files:
+        return []
+    latest = max(files)
+    with open(latest, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
 def run_kickstarter_scraper():
     """运行 Kickstarter 抓取"""
-    print("\n🚀 [1/3] 抓取 Kickstarter...")
+    print("\n🚀 [1/5] 抓取 Kickstarter...")
     script = os.path.join(OUTPUT_DIR, "kickstarter_scraper.py")
     result = subprocess.run(
         ["python3", script],
@@ -194,7 +319,7 @@ def run_kickstarter_scraper():
 
 def run_indiegogo_scraper():
     """运行 Indiegogo 抓取"""
-    print("\n🚀 [2/3] 抓取 Indiegogo...")
+    print("\n🚀 [2/5] 抓取 Indiegogo...")
     script = os.path.join(OUTPUT_DIR, "indiegogo-stealth.js")
     result = subprocess.run(
         ["node", script],
@@ -206,6 +331,40 @@ def run_indiegogo_scraper():
     print(result.stdout[-800:] if len(result.stdout) > 800 else result.stdout)
     if result.returncode != 0:
         print(f"⚠️ Indiegogo 抓取异常: {result.stderr[-300:]}")
+        return False
+    return True
+
+
+def run_makuake_scraper():
+    """运行 Makuake 抓取"""
+    print("\n🚀 [3/5] 抓取 Makuake...")
+    script = os.path.join(OUTPUT_DIR, "makuake_scraper.py")
+    result = subprocess.run(
+        ["python3", script],
+        capture_output=True,
+        text=True,
+        cwd=OUTPUT_DIR,
+    )
+    print(result.stdout[-800:] if len(result.stdout) > 800 else result.stdout)
+    if result.returncode != 0:
+        print(f"⚠️ Makuake 抓取异常: {result.stderr[-300:]}")
+        return False
+    return True
+
+
+def run_wadiz_scraper():
+    """运行 Wadiz 抓取"""
+    print("\n🚀 [4/5] 抓取 Wadiz...")
+    script = os.path.join(OUTPUT_DIR, "wadiz_scraper.py")
+    result = subprocess.run(
+        ["python3", script],
+        capture_output=True,
+        text=True,
+        cwd=OUTPUT_DIR,
+    )
+    print(result.stdout[-800:] if len(result.stdout) > 800 else result.stdout)
+    if result.returncode != 0:
+        print(f"⚠️ Wadiz 抓取异常: {result.stderr[-300:]}")
         return False
     return True
 
@@ -223,15 +382,21 @@ def main(skip_scrape=False):
     if not skip_scrape:
         run_kickstarter_scraper()
         run_indiegogo_scraper()
+        run_makuake_scraper()
+        run_wadiz_scraper()
 
     # 2. 加载数据
-    print("\n🚀 [3/3] 合并数据并写入飞书...")
+    print("\n🚀 [5/5] 合并数据并写入飞书...")
     ks = load_kickstarter()
     ig = load_indiegogo()
+    mk = load_makuake()
+    wz = load_wadiz()
     print(f"📦 Kickstarter: {len(ks)} 个项目")
     print(f"📦 Indiegogo: {len(ig)} 个项目")
+    print(f"📦 Makuake: {len(mk)} 个项目")
+    print(f"📦 Wadiz: {len(wz)} 个项目")
 
-    all_projects = ks + ig
+    all_projects = ks + ig + mk + wz
     if not all_projects:
         print("❌ 没有数据可写入")
         return
@@ -259,17 +424,22 @@ def main(skip_scrape=False):
     # 按金额排序
     new_projects.sort(key=lambda x: x.get("pledged", 0), reverse=True)
 
-    # 4. 写入
+    # 4. 写入（带过滤）
     success = 0
     failed = 0
+    filtered = 0
     for project in new_projects:
-        if write_to_feishu(project):
+        result = write_to_feishu(project)
+        if result == True:
             success += 1
+        elif result == "filtered":
+            filtered += 1
         else:
             failed += 1
 
     print(f"\n{'='*50}")
-    print(f"✅ 成功: {success}")
+    print(f"✅ 成功写入: {success}")
+    print(f"🚫 已过滤: {filtered}")
     print(f"❌ 失败: {failed}")
     print(f"{'='*50}")
 
